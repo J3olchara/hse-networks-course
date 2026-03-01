@@ -15,35 +15,24 @@ import (
 )
 
 func main() {
-	fmt.Println("="*60)
-	fmt.Println("=== ARP PROTOCOL TOOL ===")
-	fmt.Println("=== Протокол ARP и адресация уровня Data Link ===")
-	fmt.Println("="*60)
-
 	cfg, err := config.Load()
 	if err != nil {
-		fmt.Printf("ОШИБКА: %v\n", err)
-		fmt.Println("\nУбедитесь, что:")
-		fmt.Println("1. Создан файл .env (скопируйте из .env.example)")
-		fmt.Println("2. Заполнены все параметры в .env")
-		fmt.Println("3. IP и MAC адреса указаны корректно")
+		fmt.Printf(err.Error())
 		os.Exit(1)
 	}
 
-	fmt.Printf("\nЗагруженная конфигурация:\n")
-	fmt.Printf("  Устройство IP:  %s\n", cfg.DeviceIP)
-	fmt.Printf("  Устройство MAC: %s\n", cfg.DeviceMAC)
-	fmt.Printf("  Роутер IP:      %s\n", cfg.RouterIP)
-	fmt.Printf("  Интерфейс:      %s\n\n", cfg.NetworkInterface)
+	fmt.Printf("device ip:  %s\n", cfg.DeviceIP)
+	fmt.Printf("device mac: %s\n", cfg.DeviceMAC)
+	fmt.Printf("router ip: %s\n", cfg.RouterIP)
+	fmt.Printf("network interface: %s\n\n", cfg.NetworkInterface)
 
-	fmt.Println("ВНИМАНИЕ: Для работы с PCAP требуются права root!")
-	fmt.Println("Запустите программу с sudo: sudo ./arp-tool\n")
+	fmt.Println("обязательно запустите программу с sudo")
 
 	reader := bufio.NewReader(os.Stdin)
 
 	for {
 		printMenu()
-		
+
 		fmt.Print("Выберите команду: ")
 		input, err := reader.ReadString('\n')
 		if err != nil {
@@ -52,7 +41,7 @@ func main() {
 		}
 
 		input = strings.TrimSpace(input)
-		
+
 		switch input {
 		case "1":
 			fmt.Println("\n--- Команда 1: Захват ARP пакетов ---")
@@ -77,13 +66,13 @@ func main() {
 		case "3":
 			fmt.Println("\n--- Команда 3: Собрать статистику ---")
 			fmt.Print("Введите время сбора статистики (в секундах): ")
-			
+
 			durationInput, err := reader.ReadString('\n')
 			if err != nil {
 				fmt.Printf("Ошибка чтения ввода: %v\n", err)
 				continue
 			}
-			
+
 			durationInput = strings.TrimSpace(durationInput)
 			seconds, err := strconv.Atoi(durationInput)
 			if err != nil || seconds <= 0 {
@@ -115,15 +104,12 @@ func main() {
 		default:
 			fmt.Printf("Неизвестная команда: %s\n", input)
 		}
-		
+
 		fmt.Println()
 	}
 }
 
 func printMenu() {
-	fmt.Println("="*60)
-	fmt.Println("ДОСТУПНЫЕ КОМАНДЫ:")
-	fmt.Println("="*60)
 	fmt.Println("1 - Захват всех ARP пакетов (PROMISCUOUS режим)")
 	fmt.Println("    • Интерпретация заголовков ARP")
 	fmt.Println("    • Вывод всех полей пакета")
@@ -142,5 +128,4 @@ func printMenu() {
 	fmt.Println("    • Объем данных между устройством и роутером")
 	fmt.Println()
 	fmt.Println("4 - Выход")
-	fmt.Println("="*60)
 }

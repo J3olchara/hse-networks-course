@@ -11,7 +11,7 @@ import (
 	"github.com/google/gopacket/pcap"
 )
 
-func FindRouterMAC(interfaceName string, deviceIP, deviceMAC net.HardwareAddr, routerIP net.IP) (net.HardwareAddr, error) {
+func FindRouterMAC(interfaceName string, deviceIP net.IP, deviceMAC net.HardwareAddr, routerIP net.IP) (net.HardwareAddr, error) {
 	handle, err := pcap.OpenLive(interfaceName, 65536, true, pcap.BlockForever)
 	if err != nil {
 		return nil, fmt.Errorf("ошибка открытия интерфейса: %v", err)
@@ -19,7 +19,7 @@ func FindRouterMAC(interfaceName string, deviceIP, deviceMAC net.HardwareAddr, r
 	defer handle.Close()
 
 	startTime := time.Now()
-	fmt.Printf("\nОтправка ARP запроса на IP: %s\n", routerIP)
+	fmt.Printf("Отправляю ARP запрос на %s\n", routerIP)
 	
 	if err := sendArpRequest(handle, deviceIP, deviceMAC, routerIP); err != nil {
 		return nil, fmt.Errorf("ошибка отправки ARP запроса: %v", err)
@@ -50,9 +50,9 @@ func FindRouterMAC(interfaceName string, deviceIP, deviceMAC net.HardwareAddr, r
 				routerMAC := net.HardwareAddr(arp.SourceHwAddress)
 				elapsed := time.Since(startTime)
 				
-				fmt.Printf("\nПолучен ответ:\n")
-				fmt.Printf("  MAC адрес роутера: %s\n", routerMAC)
-				fmt.Printf("  Время ответа: %d ms\n\n", elapsed.Milliseconds())
+				fmt.Printf("Получен ответ от роутера\n")
+				fmt.Printf("MAC адрес роутера: %s\n", routerMAC)
+				fmt.Printf("Время ответа: %d ms\n", elapsed.Milliseconds())
 				
 				return routerMAC, nil
 			}

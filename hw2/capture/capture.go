@@ -21,7 +21,7 @@ func CaptureArpPackets(interfaceName string) error {
 		return fmt.Errorf("ошибка установки фильтра: %v", err)
 	}
 
-	fmt.Println("\nзабираем arp пакеты в режиме promiscuous")
+	fmt.Println("Захватываю ARP пакеты")
 
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 	packetCount := 0
@@ -43,8 +43,7 @@ func CaptureArpPackets(interfaceName string) error {
 
 		timestamp := packet.Metadata().Timestamp.Format("15:04:05.000000")
 
-		fmt.Printf("Пакет #%d: %s\n", packetCount, utils.FormatArpPacket(arp, eth, timestamp))
-		fmt.Println("----------------------------------------")
+		fmt.Printf("Пакет #%d:\n%s\n", packetCount, utils.FormatArpPacket(arp, eth, timestamp))
 	}
 
 	return nil

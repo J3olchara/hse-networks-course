@@ -1,7 +1,6 @@
 package statistics
 
 import (
-	"bytes"
 	"fmt"
 	"net"
 	"sort"
@@ -20,9 +19,8 @@ type requestInfo struct {
 }
 
 func CollectStatistics(interfaceName string, duration time.Duration, deviceMAC, routerMAC net.HardwareAddr) error {
-	fmt.Printf("\n=== СБОР СТАТИСТИКИ НА %d СЕКУНД ===\n", int(duration.Seconds()))
-	fmt.Println("Начинается захват трафика...")
-	fmt.Println("Для генерации ARP трафика можно: пинговать устройства, открыть браузер, и т.д.\n")
+	fmt.Printf("Собираю статистику в течение %d секунд\n", int(duration.Seconds()))
+	fmt.Println("Для генерации трафика можно пинговать устройства или открыть браузер")
 
 	stats := utils.NewStatistics()
 	pendingRequests := make(map[string]requestInfo)
@@ -52,7 +50,7 @@ func CollectStatistics(interfaceName string, duration time.Duration, deviceMAC, 
 
 		case <-ticker.C:
 			elapsed := time.Since(startTime).Seconds()
-			fmt.Printf("Прошло %.0f секунд... (собрано: %d Ethernet фреймов, %d ARP пакетов)\n", 
+			fmt.Printf("Прошло %.0f секунд, собрано %d Ethernet фреймов, %d ARP пакетов\n", 
 				elapsed, stats.TotalEthernetFrames, stats.TotalArpPackets)
 		}
 	}
@@ -131,14 +129,12 @@ func cleanupOldRequests(pendingRequests map[string]requestInfo, currentTime time
 }
 
 func printStatistics(stats *utils.Statistics, deviceMAC, routerMAC net.HardwareAddr) {
-	fmt.Println("\n" + "="*60)
-	fmt.Println("=== РЕЗУЛЬТАТЫ СТАТИСТИКИ ===")
-	fmt.Println("="*60)
+	fmt.Println("\nРезультаты:")
 	
-	fmt.Printf("\n1. Всего Ethernet фреймов: %d\n", stats.TotalEthernetFrames)
-	fmt.Printf("2. Всего ARP пакетов: %d\n\n", stats.TotalArpPackets)
+	fmt.Printf("Всего Ethernet фреймов: %d\n", stats.TotalEthernetFrames)
+	fmt.Printf("Всего ARP пакетов: %d\n", stats.TotalArpPackets)
 	
-	fmt.Printf("3. Уникальных MAC адресов: %d\n", len(stats.UniqueMACAddresses))
+	fmt.Printf("Уникальных MAC адресов: %d\n", len(stats.UniqueMACAddresses))
 	macList := make([]string, 0, len(stats.UniqueMACAddresses))
 	for mac := range stats.UniqueMACAddresses {
 		macList = append(macList, mac)
@@ -151,21 +147,18 @@ func printStatistics(stats *utils.Statistics, deviceMAC, routerMAC net.HardwareA
 		} else if mac == routerMAC.String() {
 			label = " (роутер)"
 		}
-		fmt.Printf("   - %s%s\n", mac, label)
+		fmt.Printf("  %s%s\n", mac, label)
 	}
-	fmt.Println()
 	
-	fmt.Printf("4. Широковещательных Ethernet фреймов: %d\n", stats.BroadcastFrames)
-	fmt.Printf("   Из них с протоколом ARP: %d\n\n", stats.BroadcastArpFrames)
+	fmt.Printf("Широковещательных Ethernet фреймов: %d\n", stats.BroadcastFrames)
+	fmt.Printf("Из них с протоколом ARP: %d\n", stats.BroadcastArpFrames)
 	
-	fmt.Printf("5. Gratuitous ARP Requests: %d\n\n", stats.GratuitousArpRequests)
+	fmt.Printf("Gratuitous ARP запросов: %d\n", stats.GratuitousArpRequests)
 	
-	fmt.Printf("6. Пар ARP Request/Response: %d\n\n", stats.ArpRequestResponsePairs)
+	fmt.Printf("Пар ARP запрос-ответ: %d\n", stats.ArpRequestResponsePairs)
 	
 	totalData := stats.DataVolumeToRouter + stats.DataVolumeFromRouter
-	fmt.Printf("7. Объем данных устройство ↔ роутер: %d байт\n", totalData)
-	fmt.Printf("   - Устройство → Роутер: %d байт\n", stats.DataVolumeToRouter)
-	fmt.Printf("   - Роутер → Устройство: %d байт\n", stats.DataVolumeFromRouter)
-	
-	fmt.Println("\n" + "="*60)
+	fmt.Printf("Объем данных между устройством и роутером: %d байт\n", totalData)
+	fmt.Printf("  Устройство -> Роутер: %d байт\n", stats.DataVolumeToRouter)
+	fmt.Printf("  Роутер -> Устройство: %d байт\n", stats.DataVolumeFromRouter)
 }

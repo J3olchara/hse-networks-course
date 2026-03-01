@@ -49,34 +49,21 @@ func FormatArpPacket(arp *layers.ARP, eth *layers.Ethernet, timestamp string) st
 	targetMAC := net.HardwareAddr(arp.DstHwAddress)
 	targetIP := net.IP(arp.DstProtAddress)
 
-	return fmt.Sprintf(`
-=== ARP Packet [%s] ===
-Ethernet Header:
-  Source MAC:      %s
+	return fmt.Sprintf(`Время: %s
+Ethernet:
+  Source MAC: %s
   Destination MAC: %s
-  EtherType:       0x%04x (ARP)
-
-ARP Header:
-  Hardware Type:   %d (Ethernet)
-  Protocol Type:   0x%04x (IPv4)
-  HW Addr Length:  %d bytes
-  Proto Addr Len:  %d bytes
-  Operation:       %s (%d)
-  Sender MAC:      %s
-  Sender IP:       %s
-  Target MAC:      %s
-  Target IP:       %s
+ARP:
+  Operation: %s
+  Sender MAC: %s
+  Sender IP: %s
+  Target MAC: %s
+  Target IP: %s
 `,
 		timestamp,
 		eth.SrcMAC,
 		eth.DstMAC,
-		eth.EthernetType,
-		arp.AddrType,
-		arp.Protocol,
-		arp.HwAddressSize,
-		arp.ProtAddressSize,
 		operation,
-		arp.Operation,
 		senderMAC,
 		senderIP,
 		targetMAC,

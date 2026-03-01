@@ -1,0 +1,10 @@
+module github.com/arseniizxc/network-hw2
+
+go 1.21
+
+require (
+	github.com/google/gopacket v1.1.19
+	github.com/joho/godotenv v1.5.1
+)
+
+require golang.org/x/sys v0.0.0-20190412213103-97732733099d // indirect
